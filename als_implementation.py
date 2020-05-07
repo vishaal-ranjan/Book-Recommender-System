@@ -15,27 +15,29 @@ val = val.select(val['user_id'], val['book_id'], val['rating'])
 test = spark.read.parquet('test_set.parquet')
 test = test.select(test['user_id'], test['book_id'], test['rating'])
 
-for r in range(10,100,10):
-  
-  # Create ALS Model
-  als = ALS(rank=r,userCol = 'user_id', itemCol = 'book_id', ratingCol = 'rating', coldStartStrategy = 'drop', nonnegative = True)
+for l in range(0.05,0.15,0.01):
+  for r in range(10,100,10):
 
-  # Train the model
-  model = als.fit(train)
+    # Create ALS Model
+    als = ALS(rank=r,regParam=l,userCol = 'user_id', itemCol = 'book_id', ratingCol = 'rating', coldStartStrategy = 'drop', nonnegative = True)
 
-  evaluator = RegressionEvaluator(metricName = 'rmse', labelCol = 'rating', predictionCol = 'prediction')
+    # Train the model
+    model = als.fit(train)
 
-  predictions = model.transform(val)
-  rmse = evaluator.evaluate(predictions)
-  #predictions.show()
+    evaluator = RegressionEvaluator(metricName = 'rmse', labelCol = 'rating', predictionCol = 'prediction')
 
-  predictions1 = model.transform(test)
-  rmse1 = evaluator.evaluate(predictions1)
-  print('Rank: {} \tRMSE Validation: {:.6f} \tTest Loss: {:.6f}'.format(
-        r, 
-        rmse,
-        rmse1
-        ))
+    predictions = model.transform(val)
+    rmse = evaluator.evaluate(predictions)
+    #predictions.show()
+
+    predictions1 = model.transform(test)
+    rmse1 = evaluator.evaluate(predictions1)
+    print('Rank: {} \tLambda: {:.6f} \tRMSE Validation: {:.6f} \tTest Loss: {:.6f}'.format(
+          r,
+          l,
+          rmse,
+          rmse1
+          ))
   #print("RMSE for Validation Set = ", rmse)
   #print("RMSE for Test Set = ", rmse1)
   # predictions = np.round(predictions)
