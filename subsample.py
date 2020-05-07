@@ -1,7 +1,4 @@
 # Importing the required libraries
-
-# import numpy as np
-# import pandas as pd
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import lit
 from pyspark.sql.window import Window
@@ -16,20 +13,23 @@ data.createOrReplaceTempView('data')
 # Removing the entries where rating = 0
 results = spark.sql('SELECT * FROM data WHERE rating != 0')
 results.createOrReplaceTempView('results')
+
+# Removing users which have fewer than 10 interactions
 result1 = spark.sql('SELECT * FROM results WHERE user_id IN (SELECT user_id FROM results GROUP BY user_id HAVING COUNT(user_id) > 10)')
-print('After filtering interactions < 10', result1.count())
-print(result1.show())
+print('After filtering interactions < 10: ', result1.count())
+result1.show()
 # result1 = spark.sql('SELECT * FROM results GROUP BY user_id ORDER BY COUNT(is_read)')
 
 # Selecting 1% of all users
-result1 = spark.sql('SELECT * FROM results WHERE user_id%100 = 0')
-print(result1.count())
+result1.createOrReplaceTempView('result1')
+result1 = spark.sql('SELECT * FROM result1 WHERE user_id%100 = 0')
+print('After filtering user_id: ', result1.count())
 
 # # Convert goodreads_interactions dataframe to parquet file
 # result1.write.parquet('interactions.parquet')
 result2 = spark.read.parquet('interactions.parquet')
 
-# We will randomly split the interactions dataset to train, validation and test sets in a 60:20:20 ratio
+# We will randomly split the interactions dataset to train, validation and test sets in a 60:20:20 ratio 
 train,val,test = result2.randomSplit(weights=[0.6, 0.2, 0.2], seed=45)
 
 print('Original Training Count: ', train.count())
@@ -88,7 +88,7 @@ test = spark.sql('SELECT * FROM df1 WHERE row_num%2 = 0')
 test = test.drop('row_num')
 print('Test Count: ', test.count())
 
-# # Convert train, val, test dataframes to parquet files
+# Convert train, val, test dataframes to parquet files
 # train.write.parquet('training_set.parquet')
 # val.write.parquet('validation_set.parquet')
 # test.write.parquet('test_set.parquet')
