@@ -26,8 +26,8 @@ result1 = spark.sql('SELECT * FROM result1 WHERE user_id%100 = 0')
 print('After filtering user_id: ', result1.count())
 
 # # Convert goodreads_interactions dataframe to parquet file
-# result1.write.parquet('interactions.parquet')
-result2 = spark.read.parquet('interactions.parquet')
+result1.write.parquet('interactions.parquet')
+# result2 = spark.read.parquet('interactions.parquet')
 
 # We will randomly split the interactions dataset to train, validation and test sets in a 60:20:20 ratio 
 train,val,test = result2.randomSplit(weights=[0.6, 0.2, 0.2], seed=45)
