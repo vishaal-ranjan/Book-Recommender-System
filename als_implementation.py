@@ -15,8 +15,8 @@ val = val.select(val['user_id'], val['book_id'], val['rating'])
 test = spark.read.parquet('test_set.parquet')
 test = test.select(test['user_id'], test['book_id'], test['rating'])
 
-for l in range(0.05,0.15,0.01):
-  for r in range(10,100,10):
+for l in np.arange(0.05,0.15,0.01):
+  for r in np.arange(10,100,10):
 
     # Create ALS Model
     als = ALS(rank=r,regParam=l,userCol = 'user_id', itemCol = 'book_id', ratingCol = 'rating', coldStartStrategy = 'drop', nonnegative = True)
