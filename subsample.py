@@ -6,7 +6,7 @@ from pyspark.sql.functions import col, row_number
 spark = SparkSession.builder.appName("My_Session").getOrCreate()
 
 # Load the goodreads_interactions dataset as a dataframe
-data = spark.read.csv('goodreads_interactions.csv', schema='user_id INT, book_id INT, is_read INT, rating INT, is_reviewed INT')
+data = spark.read.csv('hdfs:/user/bm106/pub/goodreads/goodreads_interactions.csv', schema='user_id INT, book_id INT, is_read INT, rating INT, is_reviewed INT')
 print('Original dataset count: ', data.count())
 data.createOrReplaceTempView('data')
 
@@ -26,8 +26,8 @@ result1 = spark.sql('SELECT * FROM result1 WHERE user_id%100 = 0')
 print('After filtering user_id: ', result1.count())
 
 # # Convert goodreads_interactions dataframe to parquet file
-result1.write.parquet('interactions.parquet')
-# result2 = spark.read.parquet('interactions.parquet')
+result1.write.parquet('hdfs:/user/vr1089/interactions.parquet')
+# result2 = spark.read.parquet('hdfs:/user/vr1089/interactions.parquet')
 
 # We will randomly split the interactions dataset to train, validation and test sets in a 60:20:20 ratio 
 train,val,test = result2.randomSplit(weights=[0.6, 0.2, 0.2], seed=45)
@@ -89,6 +89,6 @@ test = test.drop('row_num')
 print('Test Count: ', test.count())
 
 # Convert train, val, test dataframes to parquet files
-# train.write.parquet('training_set.parquet')
-# val.write.parquet('validation_set.parquet')
-# test.write.parquet('test_set.parquet')
+# train.write.parquet('hdfs:/user/vr1089/training_set.parquet')
+# val.write.parquet('hdfs:/user/vr1089/validation_set.parquet')
+# test.write.parquet('hdfs:/user/vr1089/test_set.parquet')
