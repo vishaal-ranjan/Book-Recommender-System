@@ -16,7 +16,7 @@ test = spark.read.parquet('test_set.parquet')
 test = test.select(test['user_id'], test['book_id'], test['rating'])
 
 # Create ALS Model
-als = ALS(userCol = 'user_id', itemCol = 'book_id', ratingCol = 'rating', coldStartStrategy = 'drop', nonnegative = True)
+als = ALS(rank=50,regParam=0.09,userCol = 'user_id', itemCol = 'book_id', ratingCol = 'rating', coldStartStrategy = 'drop', nonnegative = True)
 
 # Train the model
 model = als.fit(train)
