@@ -1,4 +1,4 @@
-#Importing the required libraries
+# Importing the required libraries
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import lit
 from pyspark.sql.window import Window
@@ -6,7 +6,7 @@ from pyspark.sql.functions import col, row_number
 spark = SparkSession.builder.appName("My_Session").getOrCreate()
 
 # Load the goodreads_interactions dataset as a dataframe
-data = spark.read.csv('hdfs:/user/bm106/pub/goodreads/goodreads_interactions.csv', schema='user_id INT, book_id INT, is_read INT, rating INT, is_reviewed INT')
+data = spark.read.csv('goodreads_interactions.csv', schema='user_id INT, book_id INT, is_read INT, rating INT, is_reviewed INT')
 print('Original dataset count: ', data.count())
 data.createOrReplaceTempView('data')
 
@@ -30,13 +30,16 @@ print('After filtering user_id: ', result1.count())
 # result1 = spark.sql('SELECT * FROM result1 WHERE user_id%20 = 0')
 # print('After filtering user_id: ', result1.count())
 
-# Selecting 10%
+# Selecting 10% of all users
+# result1.createOrReplaceTempView('result1')
+# result1 = spark.sql('SELECT * FROM result1 WHERE user_id%10 = 0')
+# print('After filtering user_id: ', result1.count())
 
 # # Convert goodreads_interactions dataframe to parquet file
 # result1.write.parquet('interactions.parquet')
 result2 = spark.read.parquet('interactions.parquet')
 
-# We will randomly split the interactions dataset to train, validation and test sets in a 60:20:20 ratio
+# We will randomly split the interactions dataset to train, validation and test sets in a 60:20:20 ratio 
 train,val,test = result2.randomSplit(weights=[0.6, 0.2, 0.2], seed=45)
 
 print('Original Training Count: ', train.count())
@@ -53,7 +56,6 @@ df = result3.withColumn("row_num", row_number().over(w)).drop("new_column")
 # We select all the odd numbered rows from the validation set
 df.createOrReplaceTempView('df')
 df = spark.sql('SELECT * FROM df WHERE row_num%2 = 1')
-
 
 # We will drop the row_num column from the validation set
 df = df.drop('row_num')
@@ -97,6 +99,6 @@ test = test.drop('row_num')
 print('Test Count: ', test.count())
 
 # Convert train, val, test dataframes to parquet files
-train.write.parquet('training_set.parquet')
-val.write.parquet('validation_set.parquet')
-test.write.parquet('test_set.parquet')
+# train.write.parquet('training_set.parquet')
+# val.write.parquet('validation_set.parquet')
+# test.write.parquet('test_set.parquet')

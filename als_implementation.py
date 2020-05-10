@@ -116,11 +116,11 @@ metrics_val = RankingMetrics(output_val.rdd)
 result_val = metrics_val.meanAveragePrecision
 print('The MAP is:', result_val)
 
-result_val = metrics_val.meanAveragePrecision
-print('The Mean Precision at k is:', result_val)
+# result_val = metrics_val.meanAveragePrecision
+# print('The Mean Precision at k is:', result_val)
 
-result_val = metrics_val.nDCGAt(5)
-print('The nDCG is:', result_val)
+# result_val = metrics_val.nDCGAt(5)
+# print('The nDCG is:', result_val)
 
 # print('Training Set: ')
 # train.show()
