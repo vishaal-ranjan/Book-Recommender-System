@@ -25,6 +25,13 @@ result1.createOrReplaceTempView('result1')
 result1 = spark.sql('SELECT * FROM result1 WHERE user_id%100 = 0')
 print('After filtering user_id: ', result1.count())
 
+# Selecting 5% of all users
+# result1.createOrReplaceTempView('result1')
+# result1 = spark.sql('SELECT * FROM result1 WHERE user_id%20 = 0')
+# print('After filtering user_id: ', result1.count())
+
+# Selecting 10%
+
 # # Convert goodreads_interactions dataframe to parquet file
 result1.write.parquet('hdfs:/user/vr1089/interactions.parquet')
 # result2 = spark.read.parquet('hdfs:/user/vr1089/interactions.parquet')
