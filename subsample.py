@@ -1,4 +1,4 @@
-# Importing the required libraries
+#Importing the required libraries
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import lit
 from pyspark.sql.window import Window
@@ -33,10 +33,10 @@ print('After filtering user_id: ', result1.count())
 # Selecting 10%
 
 # # Convert goodreads_interactions dataframe to parquet file
-result1.write.parquet('hdfs:/user/vr1089/interactions.parquet')
-# result2 = spark.read.parquet('hdfs:/user/vr1089/interactions.parquet')
+# result1.write.parquet('interactions.parquet')
+result2 = spark.read.parquet('interactions.parquet')
 
-# We will randomly split the interactions dataset to train, validation and test sets in a 60:20:20 ratio 
+# We will randomly split the interactions dataset to train, validation and test sets in a 60:20:20 ratio
 train,val,test = result2.randomSplit(weights=[0.6, 0.2, 0.2], seed=45)
 
 print('Original Training Count: ', train.count())
@@ -53,6 +53,7 @@ df = result3.withColumn("row_num", row_number().over(w)).drop("new_column")
 # We select all the odd numbered rows from the validation set
 df.createOrReplaceTempView('df')
 df = spark.sql('SELECT * FROM df WHERE row_num%2 = 1')
+
 
 # We will drop the row_num column from the validation set
 df = df.drop('row_num')
@@ -96,6 +97,6 @@ test = test.drop('row_num')
 print('Test Count: ', test.count())
 
 # Convert train, val, test dataframes to parquet files
-# train.write.parquet('hdfs:/user/vr1089/training_set.parquet')
-# val.write.parquet('hdfs:/user/vr1089/validation_set.parquet')
-# test.write.parquet('hdfs:/user/vr1089/test_set.parquet')
+train.write.parquet('training_set.parquet')
+val.write.parquet('validation_set.parquet')
+test.write.parquet('test_set.parquet')
